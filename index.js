@@ -10,9 +10,18 @@ ws.on("connection", function connect(websocket, req) { //웹소켓에 특정 클
 	ALL_WS.push({ "ws": websocket, "user_id": user_id, "user_name": "" });
 
 	sendUserId(user_id);
+
+	websocket.on("close", function close(code, reason) {
+		ALL_WS.forEach(function (element, index) {
+			if (element.ws == websocket) {
+				ALL_WS.splice(index, 1); //index로부터 한 개만 제거
+			}
+		});
+		sendAllUsers();
+	});
+
 	websocket.on("message", function incomming(message) {
 		message = JSON.parse(message);
-		console.log(message);
 		switch (message.code) {
 			case "connect_name": //사용자 추가
 				ALL_WS.forEach(function (element, index) {
@@ -22,12 +31,18 @@ ws.on("connection", function connect(websocket, req) { //웹소켓에 특정 클
 				});
 				sendAllUsers();
 				break;
+			case "send_message": //채팅 메시지 받음
+				ALL_WS.forEach(function (element, index) {
+					//element.ws 클라이언트와의 연결 지점
+					let data = { "code": "chat_message", "msg": message.msg, "sender": message.user_name };
+					element.ws.send(JSON.stringify(data));
+				});
+				break;
 		}
 	})
 
 	function sendAllUsers() { //전체 사용자 정보를 보냄
 		let data = { "code": "all_users", "msg": JSON.stringify(ALL_WS) };
-
 		ALL_WS.forEach(function (element, index) {
 			element.ws.send(JSON.stringify(data));
 		});

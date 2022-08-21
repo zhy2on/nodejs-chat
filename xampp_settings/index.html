@@ -6,22 +6,24 @@
 		integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 	<script>
 		let MY_USER_ID = ""; //나의 고유값
+		let MY_NAME = "";
+		let websocket = null;
+
 		function connect() { //웹소켓에 연결
-			let my_user_name = $.trim($("#myname").val());
-			if (!my_user_name) {
+			MY_NAME = $.trim($("#myname").val());
+			if (!MY_NAME) {
 				alert("접속자명을 입력해 주세요");
 				$("#myname").focus();
 				return false;
 			}
-			$("#myname").val(""); //myname 입력 후 빈칸으로 초기화
-			let websocket = new WebSocket("ws://localhost:8008");
+			websocket = new WebSocket("ws://localhost:8008");
 			websocket.onmessage = function (e) { //서버로부터 메시지가 올 때, 이 이벤트가 실행
 				let message = JSON.parse(e.data);
 
 				switch (message.code) {
 					case "my_user_id": //user_id가 전송됨
 						MY_USER_ID = message.user_id;
-						sendMyNmae(my_user_name);
+						sendMyNmae(MY_NAME);
 						// alert("user_id 받음: " + MY_USER_ID);
 						break;
 					case "all_users": //전체 사용자를 받음
@@ -36,16 +38,38 @@
 							`);
 						});
 						break;
+					case "chat_message":
+						$("#divMsg").append(`
+						<div>
+							${message.sender}: ${message.msg}
+						</div>
+						`);
+						break;
 				}
 			}
-			function sendMyNmae(user_name) {
-				let data = {
-					"code": "connect_name",
-					"user_name": user_name,
-					"user_id": MY_USER_ID
-				};
-				websocket.send(JSON.stringify(data));
+		}
+
+		function sendMyNmae(user_name) {
+			let data = {
+				"code": "connect_name",
+				"user_name": user_name,
+				"user_id": MY_USER_ID
+			};
+			websocket.send(JSON.stringify(data));
+			$("#divPannel").html(`<input type=text id="txtMessage" value="" placeholder="보낼 메시지를 입력하세요" style="font-size:18px; width:320px" onkeypress="javascript:if(event.keyCode==13){sendMessage();return false;};return true;"> 
+		<button style="font-size:18px; background-color:black; color:white" onclick="sendMessage();">보내기</button`);
+		}
+
+		function sendMessage() {
+			let message = $.trim($("#txtMessage").val());
+			if (!message) {
+				alert("보낼 메시지를 입력해 주세요");
+				$("#txtMessage").focus();
+				return false;
 			}
+
+			let data = { "code": "send_message", "user_name": MY_NAME, "user_id": MY_USER_ID, "msg": message };
+			websocket.send(JSON.stringify(data));
 		}
 	</script>
 </head>
@@ -72,7 +96,6 @@
 				onkeypress="javascript:if(event.keyCode==13){connect();return false;};return true;">
 			<button style="font-size:18px; background-color:black; color:white" onclick="connect();">접속하기</button>
 		</div>
-	</div>
 </body>
 
 </html>
