@@ -1,0 +1,22 @@
+{
+  "name": "nodejs-chat",
+  "version": "1.0.0",
+  "description": "node.js로 간단한 채팅 프로그램을 만들어 본다",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zhy2on/nodejs-chat.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zhy2on/nodejs-chat/issues"
+  },
+  "homepage": "https://github.com/zhy2on/nodejs-chat#readme",
+  "dependencies": {
+    "ws": "^8.8.1"
+  }
+}
