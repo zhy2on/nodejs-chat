@@ -49,7 +49,7 @@ const UserList = styled.div`
   overflow: hidden;
   // border-left: 1px solid #cfdae1;
   // border-top: 1px solid #cfdae1;
-  border: solid magenta;
+  border: solid orange;
   width: 175px;
 `;
 
@@ -60,7 +60,8 @@ const MyAccount = styled.div `
   bottom: 0;
   height: 29px;
   padding: 8px;
-  background: #445166;
+  // background: #445166;
+  border: solid magenta;
 `;
 
 const ChatTitle = styled.div`
@@ -82,7 +83,7 @@ const ChatList = styled.div`
 `;
 
 const InputArea = styled.div`
-  background: #e4eaee;
+  // background: #e4eaee;
   padding: 6px;
   overflow: hidden;
   position: relative;
@@ -103,7 +104,9 @@ root.render(
           <ChatList />
           <InputArea />
         </ChatArea>
-        <UserList />
+        <UserList>
+          <MyAccount />
+        </UserList>
       </WindowArea>
     </WindowWrapper>
   </React.StrictMode>
